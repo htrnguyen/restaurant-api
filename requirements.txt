@@ -6,3 +6,4 @@ python-dotenv
 pydantic
 PyJWT
 python-multipart
+pydantic-settings
