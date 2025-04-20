@@ -15,6 +15,15 @@ from supabase import Client, create_client
 # Load environment variables
 load_dotenv()
 
+# Check required environment variables
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+if not SUPABASE_URL or not SUPABASE_KEY:
+    raise Exception(
+        "Missing required environment variables: SUPABASE_URL and SUPABASE_KEY must be set"
+    )
+
 app = FastAPI(
     title="User Service API",
     description="APIs for user management including authentication and authorization",
@@ -49,9 +58,13 @@ class UnicodeJSONResponse(JSONResponse):
 app.router.default_response_class = UnicodeJSONResponse
 
 # Initialize Supabase client
-supabase: Client = create_client(
-    supabase_url=os.getenv("SUPABASE_URL"), supabase_key=os.getenv("SUPABASE_KEY")
-)
+try:
+    supabase: Client = create_client(
+        supabase_url=SUPABASE_URL, supabase_key=SUPABASE_KEY
+    )
+except Exception as e:
+    print(f"Failed to initialize Supabase client: {str(e)}")
+    raise
 
 
 class UserBase(BaseModel):
