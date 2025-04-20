@@ -1,8 +1,30 @@
 {
     "version": 2,
-    "buildCommand": "pip install -r requirements.txt && mkdocs build",
-    "outputDirectory": "site",
     "builds": [
+        {
+            "src": "services/user-service/app/main.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "services/table-service/app/main.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "services/menu-service/app/main.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "services/order-service/app/main.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "services/kitchen-service/app/main.py",
+            "use": "@vercel/python"
+        },
+        {
+            "src": "services/payment-service/app/main.py",
+            "use": "@vercel/python"
+        },
         {
             "src": "docs/**/*",
             "use": "@vercel/static"
@@ -10,8 +32,32 @@
     ],
     "routes": [
         {
+            "src": "/api/users/(.*)",
+            "dest": "services/user-service/app/main.py"
+        },
+        {
+            "src": "/api/tables/(.*)",
+            "dest": "services/table-service/app/main.py"
+        },
+        {
+            "src": "/api/menu/(.*)",
+            "dest": "services/menu-service/app/main.py"
+        },
+        {
+            "src": "/api/orders/(.*)",
+            "dest": "services/order-service/app/main.py"
+        },
+        {
+            "src": "/api/kitchen/(.*)",
+            "dest": "services/kitchen-service/app/main.py"
+        },
+        {
+            "src": "/api/payments/(.*)",
+            "dest": "services/payment-service/app/main.py"
+        },
+        {
             "src": "/(.*)",
-            "dest": "/site/$1"
+            "dest": "/docs/$1"
         }
     ]
 }
