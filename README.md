@@ -1,289 +1,173 @@
-# Restaurant API
+# Hệ thống Quản lý Nhà hàng - API Documentation
 
-This is a RESTful API for managing a restaurant's operations, including tables, menu, orders, kitchen, and more. The API is built using FastAPI and is ready for deployment on Vercel.
+Hệ thống quản lý nhà hàng được xây dựng theo kiến trúc microservices với 6 service chính:
 
-## Features
+-   **User Service (8001)**: Quản lý người dùng và xác thực
+-   **Table Service (8002)**: Quản lý bàn và đặt bàn
+-   **Menu Service (8003)**: Quản lý thực đơn và món ăn
+-   **Order Service (8004)**: Quản lý đơn hàng
+-   **Kitchen Service (8005)**: Quản lý bếp và chế biến
+-   **Payment Service (8006)**: Quản lý thanh toán và hóa đơn
 
--   Manage tables, menu items, and orders.
--   Track kitchen orders and inventory.
--   Generate reports and handle bills.
--   Health check and database status endpoints.
-
-## Requirements
+## Yêu cầu hệ thống
 
 -   Python 3.9+
--   PostgreSQL database
+-   Docker và Docker Compose (nếu chạy bằng Docker)
+-   PostgreSQL (đã được cấu hình trong Supabase)
 
-## Installation
+## Cách 1: Chạy bằng Docker
 
-1. Clone the repository:
+1. Clone repository:
 
-    ```bash
-    git clone https://github.com/your-username/restaurant-api.git
-    cd restaurant-api
-    ```
-
-2. Create a virtual environment and activate it:
-
-    ```bash
-    python -m venv venv
-    source venv/bin/activate # On Windows: venv\Scripts\activate
-    ```
-
-3. Install dependencies:
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-4. Set up the database:
-
-    - Create a PostgreSQL database.
-    - Update the database connection string in `app/core/config.py`.
-    - Initialize the database:
-        ```bash
-        python init_db.py
-        ```
-
-5. Run the application locally:
-
-    ```bash
-    uvicorn app.main:app --reload
-    ```
-
-6. Access the API documentation at `http://127.0.0.1:8000/docs`.
-
-## Deployment
-
-This project is configured for deployment on Vercel. To deploy:
-
-1. Install the Vercel CLI:
-
-    ```bash
-    npm install -g vercel
-    ```
-
-2. Deploy the project:
-    ```bash
-    vercel
-    ```
-
-## File Structure
-
-```
-restaurant-api/
-├── app/
-│   ├── api/                # API endpoints
-│   ├── core/               # Core configurations and database setup
-│   ├── crud/               # CRUD operations
-│   ├── models/             # Database models
-│   ├── schemas/            # Pydantic schemas
-│   ├── main.py             # Application entry point
-├── database.sql            # SQL script for database setup
-├── init_db.py              # Script to initialize the database
-├── requirements.txt        # Python dependencies
-├── vercel.json             # Vercel configuration
-└── README.md               # Project documentation
-```
-
-## License
-
-This project is licensed under the MIT License.
-
-## Hướng Dẫn Test API Nhà Hàng
-
-## Yêu Cầu
-
-1. Đảm bảo các service đang chạy:
 ```bash
-docker-compose ps
+git clone <repository-url>
+cd restaurant-api
 ```
 
-2. Các service cần chạy:
-- Service Người Dùng: http://localhost:8001
-- Service Bàn: http://localhost:8002
-- Service Thực Đơn: http://localhost:8003
-- Service Đơn Hàng: http://localhost:8004
-- Service Bếp: http://localhost:8005
-- Service Thanh Toán: http://localhost:8006
+2. Tạo file .env trong thư mục gốc với các biến môi trường:
 
-## Quy Trình Test
-
-### 1. Đăng Nhập Hệ Thống
-
-```http
-POST http://localhost:8001/auth/login
-Content-Type: application/json
-
-{
-    "username": "admin",
-    "password": "test123"
-}
+```env
+SUPABASE_URL=https://ziursewxdahtbrjxdaqo.supabase.co
+SUPABASE_KEY=your_supabase_key
+SECRET_KEY=your_secret_key
+DATABASE_URL=your_database_url
 ```
 
-Lưu token nhận được và sử dụng cho các request tiếp theo:
-```http
-Authorization: Bearer <your_token>
-```
+3. Build và chạy các containers:
 
-### 2. Kiểm Tra và Đặt Bàn
-
-```http
-GET http://localhost:8002/tables?status=trống
-Authorization: Bearer <your_token>
-```
-
-```http
-POST http://localhost:8002/tables/1/reserve
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "customer_name": "Nguyễn Văn A",
-    "phone": "0123456789",
-    "time": "2025-04-20T11:30:00+07:00",
-    "number_of_guests": 4
-}
-```
-
-### 3. Order Món Ăn
-
-a. Xem danh mục:
-```http
-GET http://localhost:8003/categories
-Authorization: Bearer <your_token>
-```
-
-b. Xem món ăn:
-```http
-GET http://localhost:8003/items?category_id=1
-Authorization: Bearer <your_token>
-```
-
-c. Tạo đơn hàng:
-```http
-POST http://localhost:8004/orders
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "table_id": 1,
-    "customer_name": "Nguyễn Văn A",
-    "items": [
-        {
-            "item_id": 1,
-            "quantity": 2,
-            "note": "Ít cay"
-        },
-        {
-            "item_id": 3,
-            "quantity": 1,
-            "note": "Không hành"
-        }
-    ]
-}
-```
-
-### 4. Xử Lý Đơn Hàng trong Bếp
-
-a. Bắt đầu chuẩn bị:
-```http
-PUT http://localhost:8005/kitchen/orders/1/items/1/status
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "status": "đang_chuẩn_bị",
-    "staff_id": 5
-}
-```
-
-b. Hoàn thành món:
-```http
-PUT http://localhost:8005/kitchen/orders/1/items/1/status
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "status": "hoàn_thành",
-    "note": "Đã chuẩn bị xong"
-}
-```
-
-### 5. Thanh Toán và Đóng Bàn
-
-a. Tạo hóa đơn:
-```http
-POST http://localhost:8006/bills
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "order_id": 1,
-    "payment_method": "tiền_mặt"
-}
-```
-
-b. Xử lý thanh toán:
-```http
-POST http://localhost:8006/bills/1/process
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "payment_method": "tiền_mặt",
-    "amount": 235000
-}
-```
-
-c. Cập nhật trạng thái bàn:
-```http
-PUT http://localhost:8002/tables/1/status
-Content-Type: application/json
-Authorization: Bearer <your_token>
-
-{
-    "status": "trống"
-}
-```
-
-## Lưu ý Quan Trọng
-
-1. Đảm bảo thêm header `Authorization` với token đăng nhập cho mọi request
-2. Thay thế các ID (table_id, item_id, order_id, ...) phù hợp với dữ liệu thực tế
-3. Kiểm tra response code và nội dung trả về sau mỗi request
-4. Có thể xem chi tiết request/response schema trong Swagger UI của từng service
-
-## Test bằng Swagger UI
-
-Bạn có thể sử dụng Swagger UI để test API trực quan hơn:
-
-1. Truy cập Swagger UI của từng service:
-   - Service Người Dùng: http://localhost:8001/docs
-   - Service Bàn: http://localhost:8002/docs
-   - Service Thực Đơn: http://localhost:8003/docs
-   - Service Đơn Hàng: http://localhost:8004/docs
-   - Service Bếp: http://localhost:8005/docs
-   - Service Thanh Toán: http://localhost:8006/docs
-
-2. Click vào nút "Authorize" và nhập token đăng nhập
-3. Mở endpoint cần test và click "Try it out"
-4. Copy request body mẫu tương ứng, dán vào và chỉnh sửa nếu cần
-5. Click "Execute" để gửi request
-
-## Kiểm Tra Lỗi
-
-Nếu gặp lỗi, hãy kiểm tra:
-
-1. Tất cả service đã chạy:
 ```bash
-docker-compose ps
+docker-compose up --build
 ```
 
-2. Log của service gặp lỗi:
+Các service sẽ được khởi chạy ở các cổng tương ứng:
+
+-   User Service: http://localhost:8001
+-   Table Service: http://localhost:8002
+-   Menu Service: http://localhost:8003
+-   Order Service: http://localhost:8004
+-   Kitchen Service: http://localhost:8005
+-   Payment Service: http://localhost:8006
+
+Để dừng các containers:
+
 ```bash
-docker-compose logs <service_name>
+docker-compose down
 ```
 
-3. Token đăng nhập còn hạn và được thêm vào header
-4. Request body đúng định dạng và có đầy đủ các trường bắt buộc
+## Cách 2: Chạy trực tiếp bằng Python
+
+1. Clone repository và cài đặt dependencies:
+
+```bash
+git clone <repository-url>
+cd restaurant-api
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+pip install -r requirements.txt
+```
+
+2. Tạo file .env trong thư mục gốc với các biến môi trường (tương tự như trên)
+
+3. Chạy tất cả các service cùng lúc:
+
+```bash
+python run_services.py
+```
+
+Hoặc chạy từng service riêng lẻ:
+
+```bash
+# User Service
+cd services/user-service
+uvicorn app.main:app --reload --port 8001
+
+# Table Service
+cd services/table-service
+uvicorn app.main:app --reload --port 8002
+
+# Menu Service
+cd services/menu-service
+uvicorn app.main:app --reload --port 8003
+
+# Order Service
+cd services/order-service
+uvicorn app.main:app --reload --port 8004
+
+# Kitchen Service
+cd services/kitchen-service
+uvicorn app.main:app --reload --port 8005
+
+# Payment Service
+cd services/payment-service
+uvicorn app.main:app --reload --port 8006
+```
+
+## Chạy API Documentation Server
+
+Sau khi đã khởi động các services, bạn có thể chạy API Documentation server để xem giao diện tổng quan các API:
+
+```bash
+python -m uvicorn api_docs:app --reload
+```
+
+API Documentation sẽ chạy tại http://localhost:8000, cung cấp:
+
+-   Giao diện trực quan hiển thị tất cả các services
+-   Trạng thái hoạt động của từng service
+-   Danh sách các endpoints chính của mỗi service
+-   Link trực tiếp đến Swagger UI của từng service
+
+## Kiểm tra hoạt động
+
+1. Mở trình duyệt và truy cập trang API documentation:
+
+```
+http://localhost:8000
+```
+
+2. Kiểm tra health check của từng service:
+
+-   http://localhost:8001/health
+-   http://localhost:8002/health
+-   http://localhost:8003/health
+-   http://localhost:8004/health
+-   http://localhost:8005/health
+-   http://localhost:8006/health
+
+3. Truy cập Swagger documentation của từng service:
+
+-   http://localhost:8001/docs
+-   http://localhost:8002/docs
+-   http://localhost:8003/docs
+-   http://localhost:8004/docs
+-   http://localhost:8005/docs
+-   http://localhost:8006/docs
+
+## Testing
+
+Chạy các test case tự động:
+
+```bash
+python test_api_vi.py
+```
+
+## Troubleshooting
+
+1. Nếu gặp lỗi khi chạy Docker:
+
+-   Kiểm tra Docker daemon đã chạy chưa
+-   Kiểm tra ports có bị conflict không
+-   Xem logs: `docker-compose logs`
+
+2. Nếu gặp lỗi khi chạy trực tiếp:
+
+-   Kiểm tra Python version
+-   Kiểm tra virtual environment đã được activate
+-   Kiểm tra tất cả dependencies đã được cài đặt
+-   Kiểm tra file .env có đúng format và đầy đủ thông tin
+
+## Dừng hệ thống
+
+-   Nếu chạy bằng Docker: `docker-compose down`
+-   Nếu chạy trực tiếp: Nhấn Ctrl+C trong terminal đang chạy run_services.py
