@@ -2,27 +2,7 @@
     "version": 2,
     "builds": [
         {
-            "src": "services/user-service/app/main.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "services/table-service/app/main.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "services/menu-service/app/main.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "services/order-service/app/main.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "services/kitchen-service/app/main.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "services/payment-service/app/main.py",
+            "src": "services/*/app/main.py",
             "use": "@vercel/python"
         },
         {
@@ -32,28 +12,32 @@
     ],
     "routes": [
         {
-            "src": "/api/users/(.*)",
-            "dest": "services/user-service/app/main.py"
+            "src": "/docs/(.*)",
+            "dest": "/docs/$1"
         },
         {
-            "src": "/api/tables/(.*)",
-            "dest": "services/table-service/app/main.py"
+            "src": "/users/(.*)",
+            "dest": "/services/user-service/app/main.py"
         },
         {
-            "src": "/api/menu/(.*)",
-            "dest": "services/menu-service/app/main.py"
+            "src": "/tables/(.*)",
+            "dest": "/services/table-service/app/main.py"
         },
         {
-            "src": "/api/orders/(.*)",
-            "dest": "services/order-service/app/main.py"
+            "src": "/menu/(.*)", 
+            "dest": "/services/menu-service/app/main.py"
         },
         {
-            "src": "/api/kitchen/(.*)",
-            "dest": "services/kitchen-service/app/main.py"
+            "src": "/orders/(.*)",
+            "dest": "/services/order-service/app/main.py"
         },
         {
-            "src": "/api/payments/(.*)",
-            "dest": "services/payment-service/app/main.py"
+            "src": "/kitchen/(.*)",
+            "dest": "/services/kitchen-service/app/main.py"
+        },
+        {
+            "src": "/payments/(.*)",
+            "dest": "/services/payment-service/app/main.py"
         },
         {
             "src": "/(.*)",
