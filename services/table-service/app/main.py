@@ -152,9 +152,6 @@ async def get_table(table_id: int):
 @app.post("/tables/open")
 async def open_table(table_open: TableOpen):
     try:
-        # Check if user exists by calling user service
-        # TODO: Implement user service check
-
         # Check table exists and is available
         table = (
             supabase.table("tables")
@@ -168,27 +165,22 @@ async def open_table(table_open: TableOpen):
             raise HTTPException(status_code=404, detail="Không tìm thấy bàn")
 
         if table.data["status"] == TableStatus.OCCUPIED:
-            # Check if there's an active order for this table
-            active_orders = (
+            # Check if there's an active opening for this table
+            active_openings = (
                 supabase.table("opening_table")
                 .select("*")
                 .eq("table_id", table_open.table_id)
-                .is_("closing_time", None)
+                .eq("status", "open")
                 .execute()
             )
 
-            if active_orders.data:
+            if active_openings.data:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Bàn đang được sử dụng bởi người dùng khác từ {active_orders.data[0]['time']}",
+                    detail=f"Bàn đang được sử dụng bởi người dùng khác từ {active_openings.data[0]['opened_at']}",
                 )
-            else:
-                # If no active orders, allow reopening the table
-                supabase.table("tables").update({"status": TableStatus.AVAILABLE}).eq(
-                    "id", table_open.table_id
-                ).execute()
 
-        # Update table status and create opening record atomically
+        # Update table status and create opening record
         response = (
             supabase.table("tables")
             .update({"status": TableStatus.OCCUPIED})
@@ -201,9 +193,8 @@ async def open_table(table_open: TableOpen):
             .insert(
                 {
                     "table_id": table_open.table_id,
-                    "user_id": table_open.user_id,
-                    "time": datetime.now().isoformat(),
-                    "status": "active",
+                    "opened_by": table_open.user_id,
+                    "status": "open",
                 }
             )
             .execute()
@@ -243,8 +234,8 @@ async def close_table(table_close: TableClose):
             supabase.table("opening_table")
             .select("*")
             .eq("table_id", table_close.table_id)
-            .eq("user_id", table_close.user_id)
-            .is_("closing_time", None)
+            .eq("opened_by", table_close.user_id)
+            .eq("status", "open")
             .single()
             .execute()
         )
@@ -254,35 +245,23 @@ async def close_table(table_close: TableClose):
                 status_code=403, detail="Bạn không có quyền đóng bàn này"
             )
 
-        # Update table status and close the opening record atomically
-        now = datetime.now().isoformat()
-
+        # Update table status and close the opening record
         supabase.table("tables").update({"status": TableStatus.AVAILABLE}).eq(
             "id", table_close.table_id
         ).execute()
 
-        closing = (
-            supabase.table("closing_table")
-            .insert(
-                {
-                    "table_id": table_close.table_id,
-                    "user_id": table_close.user_id,
-                    "time": now,
-                    "opening_id": opening.data["id"],
-                }
-            )
-            .execute()
-        )
-
-        # Update the opening record with closing time
+        # Update the opening record
         supabase.table("opening_table").update(
-            {"closing_time": now, "status": "closed"}
+            {
+                "closed_at": datetime.now().isoformat(),
+                "closed_by": table_close.user_id,
+                "status": "closed",
+            }
         ).eq("id", opening.data["id"]).execute()
 
         return {
             "status": "success",
             "message": "Đã đóng bàn thành công",
-            "closing_id": closing.data[0]["id"] if closing.data else None,
         }
     except HTTPException:
         raise

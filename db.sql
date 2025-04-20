@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS item_ingredients;
 DROP TABLE IF EXISTS ingredients;
 DROP TABLE IF EXISTS menu_items;
 DROP TABLE IF EXISTS menu_categories;
+DROP TABLE IF EXISTS opening_table;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS tables;
 
@@ -93,3 +94,19 @@ CREATE TABLE IF NOT EXISTS bills (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     user_id BIGINT REFERENCES users(id)
 );
+
+-- Opening table tracking
+CREATE TABLE IF NOT EXISTS opening_table (
+    id BIGSERIAL PRIMARY KEY,
+    table_id BIGINT REFERENCES tables(id),
+    opened_at TIMESTAMPTZ DEFAULT NOW(),
+    closed_at TIMESTAMPTZ,
+    opened_by BIGINT REFERENCES users(id),
+    closed_by BIGINT REFERENCES users(id),
+    status VARCHAR(20) NOT NULL DEFAULT 'open'
+);
+
+-- Create partial unique index for open tables
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_open_table 
+ON opening_table (table_id)
+WHERE status = 'open';
