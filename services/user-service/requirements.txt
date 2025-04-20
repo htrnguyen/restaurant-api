@@ -6,11 +6,3 @@ pydantic>=1.8.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.5
-sqlalchemy
-psycopg2-binary
-PyJWT
-pydantic-settings
-bcrypt
-alembic
-httpx>=0.24.0
-asyncio>=3.4.3

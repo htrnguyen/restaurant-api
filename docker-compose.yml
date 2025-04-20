@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+    user-service:
+        build: ./services/user-service
+        ports:
+            - '8001:8001'
+        environment:
+            - SUPABASE_URL=${SUPABASE_URL}
+            - SUPABASE_KEY=${SUPABASE_KEY}
+            - SECRET_KEY=${SECRET_KEY}
+        volumes:
+            - ./services/user-service:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+
+    table-service:
+        build: ./services/table-service
+        ports:
+            - '8002:8002'
+        environment:
+            - SUPABASE_URL=${SUPABASE_URL}
+            - SUPABASE_KEY=${SUPABASE_KEY}
+        volumes:
+            - ./services/table-service:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+
+    menu-service:
+        build: ./services/menu-service
+        ports:
+            - '8003:8003'
+        environment:
+            - SUPABASE_URL=${SUPABASE_URL}
+            - SUPABASE_KEY=${SUPABASE_KEY}
+        volumes:
+            - ./services/menu-service:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
+
+    order-service:
+        build: ./services/order-service
+        ports:
+            - '8004:8004'
+        environment:
+            - SUPABASE_URL=${SUPABASE_URL}
+            - SUPABASE_KEY=${SUPABASE_KEY}
+        volumes:
+            - ./services/order-service:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
+
+    kitchen-service:
+        build: ./services/kitchen-service
+        ports:
+            - '8005:8005'
+        environment:
+            - SUPABASE_URL=${SUPABASE_URL}
+            - SUPABASE_KEY=${SUPABASE_KEY}
+        volumes:
+            - ./services/kitchen-service:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload
+
+    payment-service:
+        build: ./services/payment-service
+        ports:
+            - '8006:8006'
+        environment:
+            - SUPABASE_URL=${SUPABASE_URL}
+            - SUPABASE_KEY=${SUPABASE_KEY}
+        volumes:
+            - ./services/payment-service:/app
+        command: uvicorn app.main:app --host 0.0.0.0 --port 8006 --reload
