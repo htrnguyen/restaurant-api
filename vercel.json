@@ -1,15 +1,17 @@
 {
     "version": 2,
+    "buildCommand": "pip install -r requirements.txt && mkdocs build",
+    "outputDirectory": "site",
     "builds": [
         {
-            "src": "app/main.py",
-            "use": "@vercel/python"
+            "src": "docs/**/*",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "app/main.py"
+            "dest": "/site/$1"
         }
     ]
 }
