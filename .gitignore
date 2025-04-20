@@ -57,3 +57,4 @@ Desktop.ini
 
 # SQLite
 *.sqlite3
+.vercel

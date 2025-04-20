@@ -15,7 +15,7 @@ from supabase import Client, create_client
 # Load environment variables
 load_dotenv()
 
-# Check required environment variables
+# Get environment variables
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
@@ -32,7 +32,7 @@ app = FastAPI(
     redoc_url=None,
 )
 
-# Thêm CORS middleware
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

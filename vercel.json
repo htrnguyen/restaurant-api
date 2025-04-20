@@ -3,7 +3,10 @@
     "builds": [
         {
             "src": "services/*/app/main.py",
-            "use": "@vercel/python"
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "15mb"
+            }
         }
     ],
     "routes": [
@@ -59,5 +62,10 @@
             "src": "/api/payments/(.*)",
             "dest": "services/payment-service/app/main.py"
         }
-    ]
+    ],
+    "env": {
+        "PYTHON_VERSION": "3.9",
+        "SUPABASE_URL": "@supabase_url",
+        "SUPABASE_KEY": "@supabase_key"
+    }
 }
