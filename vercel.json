@@ -8,31 +8,55 @@
     ],
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "/"
-        },
-        {
-            "src": "/api/users(/?.*)",
+            "src": "/",
             "dest": "services/user-service/app/main.py"
         },
         {
-            "src": "/api/tables(/?.*)",
+            "src": "/api/users",
+            "dest": "services/user-service/app/main.py"
+        },
+        {
+            "src": "/api/users/(.*)",
+            "dest": "services/user-service/app/main.py"
+        },
+        {
+            "src": "/api/tables",
             "dest": "services/table-service/app/main.py"
         },
         {
-            "src": "/api/menu(/?.*)",
+            "src": "/api/tables/(.*)",
+            "dest": "services/table-service/app/main.py"
+        },
+        {
+            "src": "/api/menu",
             "dest": "services/menu-service/app/main.py"
         },
         {
-            "src": "/api/orders(/?.*)",
+            "src": "/api/menu/(.*)",
+            "dest": "services/menu-service/app/main.py"
+        },
+        {
+            "src": "/api/orders",
             "dest": "services/order-service/app/main.py"
         },
         {
-            "src": "/api/kitchen(/?.*)",
+            "src": "/api/orders/(.*)",
+            "dest": "services/order-service/app/main.py"
+        },
+        {
+            "src": "/api/kitchen",
             "dest": "services/kitchen-service/app/main.py"
         },
         {
-            "src": "/api/payments(/?.*)",
+            "src": "/api/kitchen/(.*)",
+            "dest": "services/kitchen-service/app/main.py"
+        },
+        {
+            "src": "/api/payments",
+            "dest": "services/payment-service/app/main.py"
+        },
+        {
+            "src": "/api/payments/(.*)",
             "dest": "services/payment-service/app/main.py"
         }
     ]
