@@ -94,6 +94,23 @@ async def root():
     return {"message": "User Service is running"}
 
 
+@app.get("/users")
+async def get_users(role: Optional[str] = None, status: Optional[str] = None):
+    """Lấy danh sách người dùng với tùy chọn lọc theo role và status"""
+    try:
+        query = supabase.table("users").select("id,username,full_name,role,status")
+
+        if role:
+            query = query.eq("role", role)
+        if status:
+            query = query.eq("status", status)
+
+        response = query.execute()
+        return response.data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/health")
 async def health_check():
     try:
